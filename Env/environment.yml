@@ -1,0 +1,31 @@
+name: cripto3
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ca-certificates=2019.11.28=hecc5488_0
+  - certifi=2019.11.28=py37_0
+  - cffi=1.13.2=py37hb32ad35_0
+  - cryptography=2.8=py37hb32ad35_1
+  - idna=2.8=py37_1000
+  - intel-openmp=2019.4=245
+  - libblas=3.8.0=14_mkl
+  - libcblas=3.8.0=14_mkl
+  - liblapack=3.8.0=14_mkl
+  - mkl=2019.4=245
+  - numpy=1.17.3=py37hc71023c_0
+  - openssl=1.1.1d=hfa6e2cd_0
+  - pip=19.3.1=py37_0
+  - pycparser=2.19=py37_1
+  - python=3.7.5=h8c8aaf0_0
+  - setuptools=42.0.2=py37_0
+  - six=1.13.0=py37_0
+  - sqlite=3.30.1=he774522_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.16.27012=hf0eaf9b_0
+  - wheel=0.33.6=py37_0
+  - wincertstore=0.2=py37_0
+  - pip:
+    - pymongo==3.9.0
+prefix: C:\Users\Javi\.conda\envs\cripto3
+
