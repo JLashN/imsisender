@@ -173,101 +173,113 @@ def parsearFuncionHash(nombre):
 
 if __name__ == "__main__":
 
-    tiempoinicial = time.time()
-
     args = parsearArgumentos()
     random = args.random
     filename = args.file
     hashfunc = parsearFuncionHash(args.hash)
     verbose = args.verbose
-
-    if (random != None) and (filename != None):
-        print("No puedes decir que se generen imsis aleatorios y nombres de archivos simultaneamente. Es contradictorio.")
-        exit(-1)
-
-    if (filename == None) and (random == None):
-        print("Tienes que definir alguno de los parametros")
-        exit(-1)
-
-    public_key = leerClavePublica("../../Keys/public_key.pem")
-    listaaenviar = []
-    tiempoprocesar = []
-    tiempoencriptar = []
-    if random != None:
-        for i in range(random):
-            imsi = generarIMSI()
-
-            tiempoantes = time.time()
-            procesado = procesarIMSI(imsi,hashfunc)
-
-            del imsi #Borramos la variable imsi despues de procesarla
-
-            tiempoahora = time.time()
-            tiempoprocesar.append(tiempoahora-tiempoantes)
-            if verbose > 1:
-                print("El tiempo en procesar el imsi "+str(i)+" ha sido %.50f segundos" % (tiempoahora-tiempoantes))
-
-            tiempoantes = time.time()
-            encriptada = encriptar(public_key,json.dumps(procesado))
-            tiempoahora = time.time()
-            tiempoencriptar.append(tiempoahora-tiempoantes)
-            if verbose > 1:
-                print("El tiempo en encriptar el imsi "+str(i)+" ha sido %.20f segundos" % (tiempoahora-tiempoantes))
-
-            listaaenviar.append(encriptada)
-
-        if verbose > 0:
-            print("El tiempo en procesar de media ha sido %.50f segundos" % np.mean(tiempoprocesar))
-            print("La varianza del tiempo en procesar ha sido %.50f segundos" % np.var(tiempoprocesar))
-            print("El tiempo en encriptar de media ha sido %.20f segundos" % np.mean(tiempoencriptar))
-            print("La varianza del tiempo en encriptar ha sido %.20f segundos" % np.var(tiempoencriptar))
-
     
+    file2 = open(args.hash+".csv","w+")
+    file2.write("Nº Prueba;Tiempo medio procesar;Varianza tiempo procesar;Tiempo medio encriptar;Varianza tiempo encriptar;Tiempo envio;Tiempo total;\n")
+    for i in range(100):
+        print(i)
+        file2.write(str(i+1)+";")
+        tiempoinicial = time.time()
+        if (random != None) and (filename != None):
+            print("No puedes decir que se generen imsis aleatorios y nombres de archivos simultaneamente. Es contradictorio.")
+            exit(-1)
 
-    if filename != None:
-        imsi,gsmtapantenna,pwr,fechas = leerFicheroImsi(filename)
-        for i in range(len(imsi)):
+        if (filename == None) and (random == None):
+            print("Tienes que definir alguno de los parametros")
+            exit(-1)
 
+        public_key = leerClavePublica("../../Keys/public_key.pem")
+        listaaenviar = []
+        tiempoprocesar = []
+        tiempoencriptar = []
+        if random != None:
+            for i in range(random):
+                imsi = generarIMSI()
+
+                tiempoantes = time.time()
+                procesado = procesarIMSI(imsi,hashfunc)
+
+                del imsi #Borramos la variable imsi despues de procesarla
+
+                tiempoahora = time.time()
+                tiempoprocesar.append(tiempoahora-tiempoantes)
+                if verbose > 1:
+                    print("El tiempo en procesar el imsi "+str(i)+" ha sido %.50f segundos" % (tiempoahora-tiempoantes))
+
+                tiempoantes = time.time()
+                encriptada = encriptar(public_key,json.dumps(procesado))
+                tiempoahora = time.time()
+                tiempoencriptar.append(tiempoahora-tiempoantes)
+                if verbose > 1:
+                    print("El tiempo en encriptar el imsi "+str(i)+" ha sido %.20f segundos" % (tiempoahora-tiempoantes))
+
+                listaaenviar.append(encriptada)
+
+            if verbose > 0:
+                print("El tiempo en procesar de media ha sido %.50f segundos" % np.mean(tiempoprocesar))
+                file2.write("%.50f;"% np.mean(tiempoprocesar))
+                print("La varianza del tiempo en procesar ha sido %.50f segundos" % np.var(tiempoprocesar))
+                file2.write("%.50f;"% np.var(tiempoprocesar))
+                print("El tiempo en encriptar de media ha sido %.20f segundos" % np.mean(tiempoencriptar))
+                file2.write("%.50f;"% np.mean(tiempoencriptar))
+                print("La varianza del tiempo en encriptar ha sido %.20f segundos" % np.var(tiempoencriptar))
+                file2.write("%.50f;"% np.var(tiempoencriptar))
+                
+        
+
+        if filename != None:
+            imsi,gsmtapantenna,pwr,fechas = leerFicheroImsi(filename)
+            for i in range(len(imsi)):
+
+                tiempoantes = time.time()
+                procesado = procesarIMSI(imsi[i],hashfunc)
+                tiempoahora = time.time()
+                tiempoprocesar.append(tiempoahora-tiempoantes)
+                if verbose > 1:
+                    print("El tiempo en procesar el imsi "+str(i)+" ha sido %.50f segundos" % (tiempoahora-tiempoantes))
+
+                procesado["gsmtapantenna"]=gsmtapantenna[i]
+                procesado["pwr"]=pwr[i]
+                procesado["fechas"]=fechas[i]
+
+                tiempoantes = time.time()
+                encriptada = encriptar(public_key,json.dumps(procesado))
+                tiempoahora = time.time()
+                tiempoencriptar.append(tiempoahora-tiempoantes)
+                if verbose > 1:
+                    print("El tiempo en encriptar el imsi "+str(i)+" ha sido %.20f segundos" % (tiempoahora-tiempoantes))
+
+                listaaenviar.append(encriptada)
+
+            if verbose > 0:
+                print("El tiempo en procesar de media ha sido %.50f segundos" % np.mean(tiempoprocesar))
+                print("La varianza del tiempo en procesar ha sido %.50f segundos" % np.var(tiempoprocesar))
+                print("El tiempo en encriptar de media ha sido %.20f segundos" % np.mean(tiempoencriptar))
+                print("La varianza del tiempo en encriptar ha sido %.20f segundos" % np.var(tiempoencriptar))
+
+
+        if (random != None) or (filename != None):
             tiempoantes = time.time()
-            procesado = procesarIMSI(imsi[i],hashfunc)
+            for i in range(0,len(listaaenviar),MAXDICTSFORCON):
+                if len(listaaenviar)<(i+MAXDICTSFORCON):
+                    enviarIMSIs(listaaenviar[i:],args.host,args.port)
+                else:
+                    enviarIMSIs(listaaenviar[i:(i+MAXDICTSFORCON)],args.host,args.port)
             tiempoahora = time.time()
-            tiempoprocesar.append(tiempoahora-tiempoantes)
-            if verbose > 1:
-                print("El tiempo en procesar el imsi "+str(i)+" ha sido %.50f segundos" % (tiempoahora-tiempoantes))
+            if verbose > 0:
+                print("El tiempo en enviar los datos ha sido %.20f segundos" % (tiempoahora-tiempoantes))
+                file2.write("%.50f;"% (tiempoahora-tiempoantes))
 
-            procesado["gsmtapantenna"]=gsmtapantenna[i]
-            procesado["pwr"]=pwr[i]
-            procesado["fechas"]=fechas[i]
+        tiempofinal = time.time()
+        if (verbose > 0):
+            print("El tiempo total ha sido %.20f segundos" % (tiempofinal-tiempoinicial))
+            file2.write("%.50f;\n"% (tiempofinal-tiempoinicial))
 
-            tiempoantes = time.time()
-            encriptada = encriptar(public_key,json.dumps(procesado))
-            tiempoahora = time.time()
-            tiempoencriptar.append(tiempoahora-tiempoantes)
-            if verbose > 1:
-                print("El tiempo en encriptar el imsi "+str(i)+" ha sido %.20f segundos" % (tiempoahora-tiempoantes))
-
-            listaaenviar.append(encriptada)
-
-        if verbose > 0:
-            print("El tiempo en procesar de media ha sido %.50f segundos" % np.mean(tiempoprocesar))
-            print("La varianza del tiempo en procesar ha sido %.50f segundos" % np.var(tiempoprocesar))
-            print("El tiempo en encriptar de media ha sido %.20f segundos" % np.mean(tiempoencriptar))
-            print("La varianza del tiempo en encriptar ha sido %.20f segundos" % np.var(tiempoencriptar))
-
-
-    if (random != None) or (filename != None):
-        tiempoantes = time.time()
-        for i in range(0,len(listaaenviar),MAXDICTSFORCON):
-            if len(listaaenviar)<(i+MAXDICTSFORCON):
-                enviarIMSIs(listaaenviar[i:],args.host,args.port)
-            else:
-                enviarIMSIs(listaaenviar[i:(i+MAXDICTSFORCON)],args.host,args.port)
-        tiempoahora = time.time()
-        if verbose > 0:
-            print("El tiempo en enviar los datos ha sido %.20f segundos" % (tiempoahora-tiempoantes))
-
-    tiempofinal = time.time()
-    if (verbose > 0):
-        print("El tiempo total ha sido %.20f segundos" % (tiempofinal-tiempoinicial))
+    file2.close()
 
 
