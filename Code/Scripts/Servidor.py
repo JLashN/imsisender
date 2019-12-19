@@ -85,16 +85,19 @@ class MiControladorTCP(socketserver.BaseRequestHandler):
 def parsearArgumentos():
     parser = argparse.ArgumentParser(description='Programa para recibir.')
     parser.add_argument('-p','--port', default=9999, type=int, required=False, help="Puerto del host al que se le envian los datos.")
+    parser.add_argument('-o','--host', default="localhost", required=False, help="Puerto del host al que se le envian los datos.")
+
     args = parser.parse_args()
     return args
 
 if __name__ == "__main__":
-
-    PORT = parsearArgumentos().port #puerto que va a estar escuchando
+    args = parsearArgumentos()
+    PORT = args.port #puerto que va a estar escuchando
+    HOST = args.host
 
     private_key = leerClavePrivada("../../Keys/private_key.pem")
 
-    tupla_para_el_enlace = ("localhost", PORT)
+    tupla_para_el_enlace = (HOST, PORT)
     try:
         with socketserver.TCPServer(tupla_para_el_enlace, MiControladorTCP) as servidor:
             servidor.serve_forever()
